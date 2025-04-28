@@ -1,27 +1,27 @@
 const dummyData = {
-    Monday: [
-      { course: "IT0079 ", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1" },
-      { course: "CCS0043", time: "10:00 AM - 12:50 AM", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LAB)" },
-      { course: "GED0031", time: "1:00 AM - 2:50 AM", subject: "PURPOSIVE COMMUNICATION" }
-    ],
-    Tuesday: [
-      { course: "CCS0043", time: '10:00 AM - 12:40 AM <a href=https://l1nk.dev/CCS0043" target="_blank">Link</a>', subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LEC)" },
-      { course: "GED0081", time: '1:00 AM - 3:40 AM <a href=https://acesse.one/N1Yeg" target="_blank">Link</a>', subject: "COLLEGE PHYSICS 1 LECTURE " }
-    ],
-    Wednesday: [
-      { course: "CCS0103", time: "9:00 AM - 10:50 AM", subject: "TECHNOPRENEURSHIP (CCS) " },
-      { course: "GED0081L", time: "1:00 AM - 3:50 AM", subject: "COLLEGE PHYSICS 1 LABORATORY" }
-    ],
-    Thursday: [
-      { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1" },
-      { course: "IT0087L", time: "10:00 AM - 12:50 AM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LAB)" },
-      { course: "GED0031", time: "1:00 AM - 2:50 AM", subject: "PURPOSIVE COMMUNICATION" }
-    ],
-    Friday: [
-      { course: "CCS0103", time: "7:00 AM - 8:50 AM", subject: "TECHNOPRENEURSHIP (CCS)" },
-      { course: "IT0087", time: "10:00 AM - 12:40 AM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LEC)" }
-    ]
-  };
+  Monday: [
+    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1", room:""},
+    { course: "CCS0043", time: "10:00 AM - 12:50 PM", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LAB)", room:""},
+    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION", room:""}
+  ],
+  Tuesday: [
+    { course: "CCS0043", time: "10:00 AM - 12:40 PM", link: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_MGIzM2E4MTAtNDAzYS00YTQ0LWEyMzQtNzM2NTg3NDk1YmUw%40thread.v2%2F0%3Fcontext%3D%257b%2522Tid%2522%253a%2522b0a025d9-cb88-4408-9b15-ce77d47c3810%2522%252c%2522Oid%2522%253a%2522585c148b-8c40-40e7-b10f-9c59dfa6a2dc%2522%257d%26anon%3Dtrue&type=meetup-join&deeplinkId=5f32498a-0a2f-402d-ba55-d6917c4c33f3&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LEC)",room:"ONLINE"  },
+    { course: "GED0081", time: "1:00 PM - 3:40 PM", link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmNhMzYzYWYtNTYyNS00MmYyLWEwOGYtZDE4MGExNzlhODYx%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%226ded454d-9b2c-49ae-ac87-51e18b0924d2%22%7d", subject: "COLLEGE PHYSICS 1 LECTURE",room:"ONLINE" }
+  ],
+  Wednesday: [
+    { course: "CCS0103", time: "9:00 AM - 10:50 AM", subject: "TECHNOPRENEURSHIP (CCS)" ,room:""},
+    { course: "GED0081L", time: "1:00 PM - 3:50 PM", subject: "COLLEGE PHYSICS 1 LABORATORY" ,room:""}
+  ],
+  Thursday: [
+    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1",room:"" },
+    { course: "IT0087L", time: "10:00 AM - 12:50 PM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LAB)",room:"" },
+    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION",room:"" }
+  ],
+  Friday: [
+    { course: "CCS0103", time: "7:00 AM - 8:50 AM", subject: "TECHNOPRENEURSHIP (CCS)",room:"ONLINE" },
+    { course: "IT0087", time: "10:00 AM - 12:40 PM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LEC)",room:"ONLINE" }
+  ]
+};
   
   function updateDateTime() {
     const now = new Date();
@@ -57,7 +57,7 @@ const dummyData = {
     for (let item of schedule) {
       tableContent += `<tr>
         <td>${item.course || "-"}</td>
-        <td>${item.time}</td>
+        <td>${item.time} ${item.link ? `<a href="${item.link}" target="_blank">Link</a>` : ""}</td>
         <td>${item.subject}</td>
       </tr>`;
     }
@@ -94,18 +94,19 @@ const dummyData = {
   
         if (i === currentDayIndex - 1) {
           if (currentTime < startTime) {
-            nextClassTime = startTime;
-            nextClass = item;
-            timeUntilNextClass = nextClassTime - currentTime;
-            foundNextClass = true;
-            break;
+            if (!foundNextClass || startTime < nextClassTime) {
+              nextClassTime = startTime;
+              nextClass = item;
+              timeUntilNextClass = nextClassTime - currentTime;
+              foundNextClass = true;
+            }
           }
-        } else {
-          if (!foundNextClass) {
+          if (!foundNextClass || startTime < nextClassTime) {
             nextClassTime = startTime;
             nextClass = item;
             timeUntilNextClass = nextClassTime;
             foundNextClass = true;
+          }
           }
         }
       if (foundNextClass) break;
@@ -113,22 +114,18 @@ const dummyData = {
   
     if (foundNextClass) {
       document.getElementById('next-schedule').textContent = 
-        `course code: ${nextClass.course}`;
+        `Room no: ${nextClass.room}`;
+
+      // Display the countdown if a class is found
+      if (timeUntilNextClass !== null) {
+        const hoursLeft = Math.floor(timeUntilNextClass / 60);
+        const minutesLeft = timeUntilNextClass % 60;
+  
+        document.getElementById("alertMessage").textContent =
+          `Your next class "${nextClass.subject}" starts in ${hoursLeft} hours and ${minutesLeft} minutes.`;
+      }
     } else {
       document.getElementById('next-schedule').textContent = 'No more classes today!';
-    }
-  }
-  
-  
-    // Display the countdown if a class is found
-    if (nextClass && timeUntilNextClass !== null) {
-      const hoursLeft = Math.floor(timeUntilNextClass / 60);
-      const minutesLeft = timeUntilNextClass % 60;
-      const secondsLeft = (timeUntilNextClass * 60) % 60;
-  
-      document.getElementById("alertMessage").textContent =
-        `Your next class "${nextClass.subject}" starts in ${hoursLeft} hours ${minutesLeft} minutes`;
-    } else {
       document.getElementById("alertMessage").textContent = "Hello, User! No upcoming class.";
     }
   }
