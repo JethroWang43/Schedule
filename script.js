@@ -1,21 +1,21 @@
 const dummyData = {
   Monday: [
-    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1", room:""},
-    { course: "CCS0043", time: "10:00 AM - 12:50 PM", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LAB)", room:""},
-    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION", room:""}
+    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1", room:"F1209"},
+    { course: "CCS0043", time: "10:00 AM - 12:50 PM", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LAB)", room:"F1203"},
+    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION", room:"F611"}
   ],
   Tuesday: [
     { course: "CCS0043", time: "10:00 AM - 12:40 PM", link: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_MGIzM2E4MTAtNDAzYS00YTQ0LWEyMzQtNzM2NTg3NDk1YmUw%40thread.v2%2F0%3Fcontext%3D%257b%2522Tid%2522%253a%2522b0a025d9-cb88-4408-9b15-ce77d47c3810%2522%252c%2522Oid%2522%253a%2522585c148b-8c40-40e7-b10f-9c59dfa6a2dc%2522%257d%26anon%3Dtrue&type=meetup-join&deeplinkId=5f32498a-0a2f-402d-ba55-d6917c4c33f3&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LEC)",room:"ONLINE"  },
     { course: "GED0081", time: "1:00 PM - 3:40 PM", link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmNhMzYzYWYtNTYyNS00MmYyLWEwOGYtZDE4MGExNzlhODYx%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%226ded454d-9b2c-49ae-ac87-51e18b0924d2%22%7d", subject: "COLLEGE PHYSICS 1 LECTURE",room:"ONLINE" }
   ],
   Wednesday: [
-    { course: "CCS0103", time: "9:00 AM - 10:50 AM", subject: "TECHNOPRENEURSHIP (CCS)" ,room:""},
-    { course: "GED0081L", time: "1:00 PM - 3:50 PM", subject: "COLLEGE PHYSICS 1 LABORATORY" ,room:""}
+    { course: "CCS0103", time: "9:00 AM - 10:50 AM", subject: "TECHNOPRENEURSHIP (CCS)" ,room:"FITC LOUNGE"},
+    { course: "GED0081L", time: "1:00 PM - 3:50 PM", subject: "COLLEGE PHYSICS 1 LABORATORY" ,room:"F1009"}
   ],
   Thursday: [
-    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1",room:"" },
-    { course: "IT0087L", time: "10:00 AM - 12:50 PM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LAB)",room:"" },
-    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION",room:"" }
+    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1",room:"F1209" },
+    { course: "IT0087L", time: "10:00 AM - 12:50 PM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LAB)",room:"F1211" },
+    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION",room:"F611" }
   ],
   Friday: [
     { course: "CCS0103", time: "7:00 AM - 8:50 AM", subject: "TECHNOPRENEURSHIP (CCS)",room:"ONLINE" },
@@ -85,32 +85,29 @@ const dummyData = {
     for (let i = currentDayIndex - 1; i < 5; i++) {
       const dayName = daysOfWeek[i];
       const schedule = dummyData[dayName];
-      
+    
       if (!schedule) continue;
-  
+    
       for (let item of schedule) {
         const [start, end] = item.time.split(" - ");
         const startTime = parseTime(start);
-  
-        if (i === currentDayIndex - 1) {
-          if (currentTime < startTime) {
-            if (!foundNextClass || startTime < nextClassTime) {
-              nextClassTime = startTime;
-              nextClass = item;
-              timeUntilNextClass = nextClassTime - currentTime;
-              foundNextClass = true;
-            }
-          }
-          if (!foundNextClass || startTime < nextClassTime) {
-            nextClassTime = startTime;
-            nextClass = item;
-            timeUntilNextClass = nextClassTime;
-            foundNextClass = true;
-          }
-          }
+    
+        if (i === currentDayIndex - 1 && startTime <= currentTime) {
+          // If class already started or passed, skip
+          continue;
         }
+    
+        if (!foundNextClass || startTime < nextClassTime) {
+          nextClassTime = startTime;
+          nextClass = item;
+          timeUntilNextClass = (i === currentDayIndex - 1 ? startTime - currentTime : startTime);
+          foundNextClass = true;
+        }
+      }
+    
       if (foundNextClass) break;
     }
+    
   
     if (foundNextClass) {
       document.getElementById('next-schedule').textContent = 
