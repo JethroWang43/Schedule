@@ -5,7 +5,7 @@ const dummyData = {
     { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION", room:"F611"}
   ],
   Tuesday: [
-    { course: "CCS0043", time: "10:00 AM - 12:40 PM", link: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_MGIzM2E4MTAtNDAzYS00YTQ0LWEyMzQtNzM2NTg3NDk1YmUw%40thread.v2%2F0%3Fcontext%3D%257b%2522Tid%2522%253a%2522b0a025d9-cb88-4408-9b15-ce77d47c3810%2522%252c%2522Oid%2522%253a%2522585c148b-8c40-40e7-b10f-9c59dfa6a2dc%2522%257d%26anon%3Dtrue&type=meetup-join&deeplinkId=5f32498a-0a2f-402d-ba55-d6917c4c33f3&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LEC)",room:"ONLINE"  },
+    { course: "CCS0043", time: "10:00 AM - 12:40 PM", link: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjY5ZjQxNjUtODlkMS00YzA2LWI1N2MtYzc0YWI1OTkwMGRk%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522b0a025d9-cb88-4408-9b15-ce77d47c3810%2522%252C%2522Oid%2522%253A%25227895c4a4-001d-4dff-94b6-f5ad05c2dacc%2522%257D%26fbclid%3DIwZXh0bgNhZW0CMTEAAR5A3srjT_68w-XydQx8Wh04hfrvgX21DGrojM2U-9X3vWqqm7t4QbQKNn13WQ_aem_IEHyNFwLjBIb0eMW5eShUw%26anon%3Dtrue&type=meetup-join&deeplinkId=4d15dbde-6921-46bc-a34c-c3628e58528a&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LEC)",room:"ONLINE"  },
     { course: "GED0081", time: "1:00 PM - 3:40 PM", link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmNhMzYzYWYtNTYyNS00MmYyLWEwOGYtZDE4MGExNzlhODYx%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%226ded454d-9b2c-49ae-ac87-51e18b0924d2%22%7d", subject: "COLLEGE PHYSICS 1 LECTURE",room:"ONLINE" }
   ],
   Wednesday: [
@@ -18,8 +18,8 @@ const dummyData = {
     { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION",room:"F611" }
   ],
   Friday: [
-    { course: "CCS0103", time: "7:00 AM - 8:50 AM", subject: "TECHNOPRENEURSHIP (CCS)",room:"ONLINE" },
-    { course: "IT0087", time: "10:00 AM - 12:40 PM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LEC)",room:"ONLINE" }
+    { course: "CCS0103", time: "7:00 AM - 8:50 AM",link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjFlNmY5M2YtYjM0Ny00MjdhLTgzZGQtNTEwMjdlZjU0NWYz%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%22a1ec5ff8-4b3c-4842-b087-2e08fe73cac6%22%7d", subject: "TECHNOPRENEURSHIP (CCS)",room:"ONLINE" },
+    { course: "IT0087", time: "10:00 AM - 12:40 PM",link:"https://teams.microsoft.com/l/meetup-join/19%3ameeting_MjE4MDA0YWYtNWZmZi00ODkzLTgyNDMtNmZmNTgyMzlkY2Yw%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%224778c511-268a-4ae7-8385-634c1ff8716a%22%7d", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LEC)",room:"ONLINE" }
   ]
 };
   
