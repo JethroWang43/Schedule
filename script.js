@@ -1,25 +1,26 @@
 const dummyData = {
-  Monday: [
-    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1", room:"F1209"},
-    { course: "CCS0043", time: "10:00 AM - 12:50 PM", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LAB)", room:"F1203"},
-    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION", room:"F611"}
-  ],
+  // ...existing code...
   Tuesday: [
-    { course: "CCS0043", time: "10:00 AM - 12:40 PM", link: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjY5ZjQxNjUtODlkMS00YzA2LWI1N2MtYzc0YWI1OTkwMGRk%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522b0a025d9-cb88-4408-9b15-ce77d47c3810%2522%252C%2522Oid%2522%253A%25227895c4a4-001d-4dff-94b6-f5ad05c2dacc%2522%257D%26fbclid%3DIwZXh0bgNhZW0CMTEAAR5A3srjT_68w-XydQx8Wh04hfrvgX21DGrojM2U-9X3vWqqm7t4QbQKNn13WQ_aem_IEHyNFwLjBIb0eMW5eShUw%26anon%3Dtrue&type=meetup-join&deeplinkId=4d15dbde-6921-46bc-a34c-c3628e58528a&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true", subject: "APPLICATIONS DEVELOPMENT AND EMERGING TECHNOLOGIES (LEC)",room:"ONLINE"  },
-    { course: "GED0081", time: "1:00 PM - 3:40 PM", link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmNhMzYzYWYtNTYyNS00MmYyLWEwOGYtZDE4MGExNzlhODYx%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%226ded454d-9b2c-49ae-ac87-51e18b0924d2%22%7d", subject: "COLLEGE PHYSICS 1 LECTURE",room:"ONLINE" }
+    { course: "GED0083", time: "1:00 PM - 3:40 PM", subject: "COLLEGE PHYSICS 2 LECTURE", room: "ONLINE" },
+    { course: "IT0035", time: "4:00 PM - 6:40 PM", subject: "APPLIED OPERATING SYSTEM", room: "ONLINE" }
   ],
   Wednesday: [
-    { course: "CCS0103", time: "9:00 AM - 10:50 AM", subject: "TECHNOPRENEURSHIP (CCS)" ,room:"FITC LOUNGE"},
-    { course: "GED0081L", time: "1:00 PM - 3:50 PM", subject: "COLLEGE PHYSICS 1 LABORATORY" ,room:"F1009"}
+    { course: "IT0037", time: "7:00 AM - 8:50 AM", subject: "SYSTEM ANALYSIS AND DESIGN", room: "FTIC Presentation Room 2" },
+    { course: "IT0093", time: "9:00 AM - 10:50 AM", subject: "MOBILE APPLICATION DEVELOPMENT 2", room: "F610" },
+    { course: "IT0103", time: "1:00 PM - 3:50 PM", subject: "NETWORKING 3", room: "F1204" }
   ],
   Thursday: [
-    { course: "IT0079", time: "7:00 AM - 8:50 AM", subject: "IT SPECILIALIZATION 5 - MOBILE APPLICATION DEVELOPMENT 1",room:"F1209" },
-    { course: "IT0087L", time: "10:00 AM - 12:50 PM", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LAB)",room:"F1211" },
-    { course: "GED0031", time: "1:00 PM - 2:50 PM", subject: "PURPOSIVE COMMUNICATION",room:"F611" }
+    { course: "IT0049", time: "7:00 AM - 8:50 AM", subject: "WEB SYSTEM TECHNOLOGIES", room: "F611" },
+    { course: "IT0093", time: "9:00 AM - 10:50 AM", subject: "MOBILE APPLICATION DEVELOPMENT 2", room: "F1209" },
+    { course: "GED0083L", time: "1:00 PM - 3:50 PM", subject: "COLLEGE PHYSICS 2 LABORATORY", room: "F1009" }
   ],
   Friday: [
-    { course: "CCS0103", time: "7:00 AM - 8:50 AM",link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjFlNmY5M2YtYjM0Ny00MjdhLTgzZGQtNTEwMjdlZjU0NWYz%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%22a1ec5ff8-4b3c-4842-b087-2e08fe73cac6%22%7d", subject: "TECHNOPRENEURSHIP (CCS)",room:"ONLINE" },
-    { course: "IT0087", time: "10:00 AM - 12:40 PM",link:"https://teams.microsoft.com/l/meetup-join/19%3ameeting_MjE4MDA0YWYtNWZmZi00ODkzLTgyNDMtNmZmNTgyMzlkY2Yw%40thread.v2/0?context=%7b%22Tid%22%3a%22b0a025d9-cb88-4408-9b15-ce77d47c3810%22%2c%22Oid%22%3a%224778c511-268a-4ae7-8385-634c1ff8716a%22%7d", subject: "IT SPECIALIZATION 6 - BUSINESS PROCESS FOR COMPUTING SYSTEM (LEC)",room:"ONLINE" }
+    { course: "IT0037", time: "1:00 PM - 2:50 PM", subject: "SYSTEM ANALYSIS AND DESIGN", room: "ONLINE" },
+    { course: "IT0035L", time: "4:00 PM - 6:50 PM", subject: "APPLIED OPERATING SYSTEM LAB", room: "ONLINE" }
+  ],
+  Saturday: [
+    { course: "IT0049", time: "11:00 AM - 12:50 PM", subject: "WEB SYSTEM TECHNOLOGIES", room: "F706" },
+    { course: "IT0103", time: "1:00 PM - 2:50 PM", subject: "NETWORKING 3", room: "F1211" }
   ]
 };
   
@@ -50,10 +51,20 @@ const dummyData = {
       return;
     }
   
+    // Check if all classes for the day are online
+    let isOnline = schedule.every(item => item.room && item.room.toUpperCase() === "ONLINE");
+    let description = isOnline ? "All classes are ONLINE" : "All classes are ONSITE";
+
+    const descElem = document.createElement("p");
+    descElem.textContent = description;
+    descElem.style.fontWeight = "bold";
+    descElem.style.marginBottom = "10px";
+    scheduleDisplay.appendChild(descElem);
+
     const table = document.createElement("table");
     const tableHeader = `<tr><th>Course</th><th>Time</th><th>Subject</th></tr>`;
     let tableContent = tableHeader;
-  
+
     for (let item of schedule) {
       tableContent += `<tr>
         <td>${item.course || "-"}</td>
@@ -61,7 +72,7 @@ const dummyData = {
         <td>${item.subject}</td>
       </tr>`;
     }
-  
+
     table.innerHTML = tableContent;
     scheduleDisplay.appendChild(table);
   }

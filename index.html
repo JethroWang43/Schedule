@@ -12,7 +12,7 @@
 <body>
 
   <header>
-    <div class="logo">TW22</div>
+    <div class="logo">TW32</div>
     <div class="hamburger">&#9776;</div>
   </header>
 
@@ -30,11 +30,13 @@
   </section>
 
   <section class="schedule">
-    <button class="dy" onclick="showSchedule('Monday', this)">Monday</button>
-    <button class="dy" onclick="showSchedule('Tuesday', this)">Tuesday</button>
-    <button class="dy" onclick="showSchedule('Wednesday', this)">Wednesday</button>
-    <button class="dy" onclick="showSchedule('Thursday', this)">Thursday</button>
-    <button class="dy" onclick="showSchedule('Friday', this)">Friday</button>
+  <select id="dayDropdown" class="day-dropdown" onchange="showSchedule(this.value, this)">
+    <option value="Tuesday">Tuesday</option>
+    <option value="Wednesday">Wednesday</option>
+    <option value="Thursday">Thursday</option>
+    <option value="Friday">Friday</option>
+    <option value="Saturday">Saturday</option>
+  </select>
   </section>
   
 
@@ -50,11 +52,56 @@
 
 
     <footer>
-        <a href="#">Enter Your Vision Board</a>
+        <a href="#">Keep Pushing</a>
     </footer>
 
     <!-- Schedule Display Section -->
     <script src="script.js"></script>
+    <script>
+      // Auto-select today's day in the dropdown
+      document.addEventListener('DOMContentLoaded', function() {
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const today = days[new Date().getDay()];
+        const dropdown = document.getElementById('dayDropdown');
+        if (dropdown) {
+          for (let i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === today) {
+              dropdown.selectedIndex = i;
+              dropdown.dispatchEvent(new Event('change'));
+              break;
+            }
+          }
+        }
+      });
+    </script>
+    <script>
+      const motivations = [
+        "Keep pushing forward!",
+        "You are capable of amazing things.",
+        "Every day is a new opportunity.",
+        "Stay positive, work hard, make it happen.",
+        "Success is the sum of small efforts repeated.",
+        "Believe in yourself and all that you are.",
+        "Dream big and dare to fail.",
+        "Your only limit is your mind.",
+        "Great things never come from comfort zones.",
+        "Don't watch the clock; do what it does. Keep going."
+      ];
+      function setMotivationFooter() {
+        const footer = document.querySelector('footer');
+        if (footer) {
+          let msg = motivations[Math.floor(Math.random() * motivations.length)];
+          let motElem = document.createElement('div');
+          motElem.textContent = msg;
+          motElem.style.marginBottom = '0.5rem';
+          motElem.style.fontWeight = 'bold';
+          motElem.style.fontSize = '1.1rem';
+          motElem.style.textAlign = 'center';
+          footer.insertBefore(motElem, footer.firstChild);
+        }
+      }
+      document.addEventListener('DOMContentLoaded', setMotivationFooter);
+    </script>
 
 
 </body>
