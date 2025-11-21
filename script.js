@@ -1,4 +1,4 @@
-const dummyData = {
+window.dummyData = {
   // ...existing code...
   Tuesday: [
     { course: "GED0083", time: "1:00 PM - 3:40 PM", subject: "COLLEGE PHYSICS 2 LECTURE", room: "ONLINE", link: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_ZGFkZTBmMWEtMmFiMy00NTg1LTk1ZWMtODRhM2E3MmM0NDY2%40thread.v2%2F0%3Fcontext%3D%257b%2522Tid%2522%253a%2522b0a025d9-cb88-4408-9b15-ce77d47c3810%2522%252c%2522Oid%2522%253a%2522b57b872c-4427-46ef-b3d2-1b4e92c52d71%2522%257d%26anon%3Dtrue&type=meetup-join&deeplinkId=f4495a75-1d49-400a-8af4-66956e75b9a0&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" },

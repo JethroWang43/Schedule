@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Chatbot - Schedule</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .chat-page { max-width:900px; margin:20px auto; padding:18px; }
+    .chat-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .chat-box { background:#fff; border-radius:10px; padding:14px; box-shadow:0 8px 24px rgba(0,0,0,0.06); height:50vh; overflow:auto; }
+    .message { margin:8px 0; display:flex; }
+    .message.user { justify-content:flex-end; }
+    .message .bubble { max-width:75%; padding:10px 12px; border-radius:12px; }
+    .message.user .bubble { background:#4CAF50; color:white; }
+    .message.bot .bubble { background:#f1f1f1; color:#222; }
+    .chat-controls { display:flex; gap:8px; margin-top:10px; }
+    .chat-controls input[type="text"] { flex:1; padding:10px; border-radius:8px; border:1px solid #ddd; }
+    .chat-controls button { padding:10px 14px; border-radius:8px; border:none; background:#4CAF50; color:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">TW32</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <nav id="sideNav" class="side-nav" aria-hidden="true">
+      <button id="closeNav" class="close-nav">×</button>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calendar.html">Calendar & Dashboard</a></li>
+        <li><a href="chat.html">AI Chatbot</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="chat-page">
+    <div class="chat-header">
+      <h2>AI Chatbot</h2>
+    </div>
+
+    <div style="margin:8px 0; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <label style="font-size:0.95rem;color:#555;">n8n Webhook URL:</label>
+      <input id="n8nEndpoint" type="text" style="flex:1; min-width:260px; padding:8px; border-radius:6px; border:1px solid #ddd;" placeholder="http://localhost:5678/webhook/53c136fe-3e77-4709-a143-fe82746dd8b6" />
+      <button id="saveN8nBtn" style="background:#1976d2;color:#fff; padding:8px 10px;border-radius:6px;border:none;">Save</button>
+      <button id="resetN8nBtn" style="background:#9e9e9e;color:#fff; padding:8px 10px;border-radius:6px;border:none;">Use Default</button>
+    </div>
+
+    <div id="chatBox" class="chat-box" aria-live="polite"></div>
+
+    <div class="chat-controls">
+      <input id="chatInput" type="text" placeholder="Ask about your schedule, tasks, or general questions..." />
+      <button id="sendBtn">Send</button>
+      <button id="resetBtn" style="background:#e0e0e0;color:#222">Reset</button>
+    </div>
+  </main>
+
+  <script src="schedule-data.js"></script>
+  <script src="chat.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const ham = document.getElementById('hamburger');
+      const side = document.getElementById('sideNav');
+      const close = document.getElementById('closeNav');
+      ham && ham.addEventListener('click', () => { side.style.transform = 'translateX(0)'; side.setAttribute('aria-hidden','false'); });
+      close && close.addEventListener('click', () => { side.style.transform = ''; side.setAttribute('aria-hidden','true'); });
+    });
+  </script>
+</body>
+</html>
