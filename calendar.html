@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calendar & Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="logo">TW32</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <nav id="sideNav" class="side-nav" aria-hidden="true">
+      <button id="closeNav" class="close-nav">×</button>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calendar.html">Calendar & Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="calendar">
+      <div class="calendar-header">
+        <button id="prevMonth">&lt;</button>
+        <div class="month-year"><span id="calendarMonth"></span> <span id="calendarYear"></span></div>
+        <button id="nextMonth">&gt;</button>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+      <p class="selected-date">Selected: <span id="selectedDate">None</span></p>
+    </section>
+
+    <aside class="panel">
+      <section class="task-manager">
+        <h3>Add Task to Calendar</h3>
+        <form id="taskForm">
+          <input type="text" id="taskTitle" placeholder="Task title" required />
+          <input type="date" id="taskDate" required />
+          <input type="time" id="taskTime" />
+          <input type="text" id="taskCategory" placeholder="Category (e.g. Study, Work)" />
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button type="submit">Add to Calendar</button>
+            <button type="button" id="clearTasksBtn">Clear All Tasks</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="dashboard">
+        <h3>Upcoming Tasks</h3>
+        <label style="display:block;margin-bottom:8px;"><input type="checkbox" id="autoControlToggle" /> Auto Take Control Warnings</label>
+        <ul id="upcomingList"></ul>
+      </section>
+    </aside>
+  </main>
+
+  <footer>
+    <a href="https://solar.feutech.edu.ph/user/profile" target="_blank">Go to FEU Tech Solar Profile</a>
+  </footer>
+
+  <script src="calendar.js"></script>
+  <script>
+    // Simple hamburger nav for this page
+    document.addEventListener('DOMContentLoaded', () => {
+      const ham = document.getElementById('hamburger');
+      const side = document.getElementById('sideNav');
+      const close = document.getElementById('closeNav');
+      ham && ham.addEventListener('click', () => {
+        side.style.transform = 'translateX(0)';
+        side.setAttribute('aria-hidden', 'false');
+      });
+      close && close.addEventListener('click', () => {
+        side.style.transform = '';
+        side.setAttribute('aria-hidden', 'true');
+      });
+    });
+  </script>
+</body>
+</html>

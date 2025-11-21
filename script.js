@@ -221,3 +221,102 @@ const dummyData = {
       console.log("Showing schedule for", day);
     });
   });
+
+// ----------------- Mini Dashboard for index.html -----------------
+const MINI_TASKS_KEY = 'sw_tasks_v1';
+
+function loadTasksForMini() {
+  try { return JSON.parse(localStorage.getItem(MINI_TASKS_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function renderMiniDashboard() {
+  const ul = document.getElementById('miniUpcomingList');
+  if (!ul) return;
+  ul.innerHTML = '';
+  const tasks = loadTasksForMini();
+  const now = new Date();
+  const upcoming = tasks
+    .filter(t => !t.completed)
+    .map(t => ({...t, dt: new Date(t.date + (t.time ? 'T' + t.time : 'T00:00'))}))
+    .sort((a,b) => a.dt - b.dt)
+    .slice(0, 5);
+
+  const autoControl = document.getElementById('miniAutoControl')?.checked;
+
+  for (let t of upcoming) {
+    const li = document.createElement('li');
+    li.className = 'mini-dashboard-item';
+    const when = t.time ? `${t.date} ${t.time}` : t.date;
+    li.innerHTML = `<div><strong>${t.title}</strong> <span class="muted">(${t.category})</span><br><small>${when}</small></div>`;
+
+    const actions = document.createElement('div');
+    actions.className = 'mini-actions';
+
+    const doneBtn = document.createElement('button');
+    doneBtn.textContent = t.completed ? 'Undo' : 'Done';
+    doneBtn.onclick = () => { toggleCompleteMini(t.id); };
+
+    const controlBtn = document.createElement('button');
+    controlBtn.textContent = 'Take Control';
+    controlBtn.className = 'take-control-mini';
+    controlBtn.onclick = () => { takeControlMini(t.id); };
+
+    actions.appendChild(doneBtn);
+    actions.appendChild(controlBtn);
+    li.appendChild(actions);
+
+    const diffMs = t.dt - now;
+    const diffHours = diffMs / (1000*60*60);
+    if (diffHours <= 24 && diffHours >= 0) {
+      const warn = document.createElement('span');
+      warn.className = 'mini-warning';
+      warn.textContent = 'Due soon';
+      li.appendChild(warn);
+      if (autoControl) li.classList.add('needs-control');
+    }
+    if (diffHours < 0) {
+      const overdue = document.createElement('span');
+      overdue.className = 'mini-warning overdue';
+      overdue.textContent = 'Overdue';
+      li.appendChild(overdue);
+      if (autoControl) takeControlMini(t.id);
+    }
+
+    ul.appendChild(li);
+  }
+
+  // show selected date if available
+  const sel = document.getElementById('miniSelectedDate');
+  try {
+    const sd = localStorage.getItem('sw_selected_date') || 'None';
+    if (sel) sel.textContent = sd;
+  } catch(e) { if (sel) sel.textContent = 'None'; }
+}
+
+function toggleCompleteMini(id) {
+  const tasks = loadTasksForMini();
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.completed = !t.completed;
+  t.status = t.completed ? 'done' : 'scheduled';
+  localStorage.setItem(MINI_TASKS_KEY, JSON.stringify(tasks));
+  renderMiniDashboard();
+}
+
+function takeControlMini(id) {
+  const tasks = loadTasksForMini();
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.status = 'in-progress';
+  localStorage.setItem(MINI_TASKS_KEY, JSON.stringify(tasks));
+  renderMiniDashboard();
+  alert(`Taking control of task: ${t.title}`);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderMiniDashboard();
+  const miniAuto = document.getElementById('miniAutoControl');
+  miniAuto && miniAuto.addEventListener('change', renderMiniDashboard);
+  // refresh mini dashboard every minute
+  setInterval(renderMiniDashboard, 60 * 1000);
+});

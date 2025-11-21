@@ -101,21 +101,31 @@ nav {
 
 .join {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 1100px;
-  margin: 2rem auto 0 auto;
+  grid-template-columns: 2fr 1fr;
+  gap: 2.5rem;
+  padding: 2rem 24px;
+  max-width: 1200px;
+  margin: 1.5rem auto 0 auto;
+  align-items: start;
 }
+
+.left-col { display:flex; flex-direction:column; gap:18px; }
+.right-col { display:flex; flex-direction:column; gap:18px; }
 
 .schedule {
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 1rem;
   align-items: stretch;
+}
+.schedule .day-dropdown, .schedule select { width: 100%; }
+
+#scheduleDisplay {
+  grid-column: 1 / 2;
+  width: 100%;
 }
 
 .day-details {
@@ -129,13 +139,15 @@ nav {
 
 .note-of-day {
   background-color: #fff;
-  padding: 28px 24px;
-  margin-top: 32px;
-  margin-bottom: 36px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(76,175,80,0.10);
-  width: 98%;
-  max-width: 700px;
+  padding: 24px 20px;
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 6px 28px rgba(76,175,80,0.08);
+  width: 100%;
+  grid-column: 2 / 3;
+  align-self: start;
+  position: sticky;
+  top: 88px;
 }
 
 .note-of-day h3 {
@@ -171,7 +183,7 @@ nav {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 30%;
+  width: 100%;
   margin-top: 10px;
 }
 
@@ -254,13 +266,15 @@ th {
 @media screen and (max-width: 992px) {
   .join {
     grid-template-columns: 1fr;
-    justify-items: center;
-    padding: 1rem;
+    justify-items: stretch;
+    padding: 12px;
+    gap: 18px;
   }
   .day-details {
-    text-align: center;
-    margin-bottom: 1rem;
+    text-align: left;
+    margin-bottom: 0.5rem;
   }
+  .note-of-day { position: static; }
 }
 
 @media screen and (max-width: 600px) {
@@ -281,8 +295,8 @@ th {
     margin-top: 0;
   }
   .join {
-    padding: 0.5rem;
-    gap: 1rem;
+    padding: 8px 12px;
+    gap: 12px;
   }
   .schedule {
     padding: 0.5rem;
@@ -301,4 +315,80 @@ th {
     border-radius: 8px;
     max-width: 98vw;
   }
+}
+
+/* Side navigation (hamburger) */
+.side-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 240px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -6px 0 18px rgba(0,0,0,0.08);
+  transform: translateX(100%);
+  transition: transform 220ms ease;
+  z-index: 1200;
+  padding: 18px;
+}
+.side-nav ul { list-style:none; padding:0; margin-top:18px; }
+.side-nav li { margin: 10px 0; }
+.side-nav a { color:#333; text-decoration:none; font-weight:600; }
+.close-nav { background:none; border:none; font-size:1.5rem; float:right; cursor:pointer; }
+
+/* Calendar & Dashboard styles */
+.container { display:flex; gap:18px; padding:12px 24px; width:calc(100% - 48px); max-width:1600px; margin:8px auto; align-items:flex-start; }
+.calendar { background: #fff; padding: 12px; border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,0.05); max-width:none; flex:3; }
+.calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.calendar-grid { display:grid; grid-template-columns: repeat(7,1fr); gap:8px; }
+.calendar-weekday { text-align:center; font-weight:600; color:#666; }
+.calendar-day { min-height:88px; background:#f8f8f8; border-radius:6px; padding:8px; position:relative; cursor:pointer; }
+.calendar-day .num { font-weight:700; }
+.calendar-day.today { border:2px solid #4CAF50; }
+.calendar-day.selected { border:3px solid #388e3c; box-shadow: 0 8px 24px rgba(56,142,60,0.12); transform: translateY(-3px); transition: box-shadow 180ms, transform 180ms, border-color 180ms; }
+.calendar-day.has-task { background: linear-gradient(180deg,#fff9e6,#f0fff0); }
+.calendar-day.blank { background: transparent; cursor:default; }
+.task-badge { position:absolute; top:6px; right:6px; background:#e53935; color:white; padding:2px 6px; border-radius:12px; font-size:0.8rem; }
+.selected-date { margin-top:8px; font-size:0.95rem; color:#333; }
+
+.panel { display:flex; flex-direction:column; gap:14px; flex:1; max-width:420px; min-width:300px; }
+.task-manager { background:#fff; padding:14px; border-radius:10px; box-shadow:0 4px 18px rgba(0,0,0,0.05); }
+.task-manager input[type="text"], .task-manager input[type="date"], .task-manager input[type="time"] { width:100%; padding:8px; margin-top:8px; border-radius:6px; border:1px solid #ddd; }
+.dashboard { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 18px rgba(0,0,0,0.05); }
+.dashboard-item { padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.dashboard-item .muted { color:#666; font-size:0.95rem; }
+.task-actions button { margin-left:6px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer; }
+.task-actions button:hover { opacity:0.95; }
+.take-control-btn { background:#ff9800; color:#fff; }
+.warning { background:#ffeb3b; color:#222; padding:4px 8px; border-radius:8px; margin-left:8px; font-weight:600; }
+.warning.overdue { background:#f44336; color:#fff; }
+.needs-control { box-shadow:0 0 0 3px rgba(255,152,0,0.12); }
+
+/* Mini dashboard styles for index */
+.mini-dashboard {
+  background: #fff;
+  padding: 12px 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(76,175,80,0.06);
+  max-width: 420px;
+  margin: 0 0 8px 0;
+}
+.mini-dashboard h3 { margin-top:0; }
+.mini-dashboard ul { list-style:none; padding:0; margin:10px 0 0 0; }
+.mini-dashboard-item { padding:8px 6px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center; }
+.mini-dashboard .muted { color:#666; }
+.mini-actions button { margin-left:6px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer; }
+.take-control-mini { background:#ff9800; color:#fff; }
+.mini-warning { background:#ffeb3b; color:#222; padding:4px 8px; border-radius:8px; margin-left:8px; font-weight:600; }
+.mini-warning.overdue { background:#f44336; color:#fff; }
+
+@media screen and (max-width:1200px) {
+  .container { flex-direction:column; padding:12px; gap:12px; }
+  .calendar { order:1; }
+  .panel { order:2; width:100%; max-width:100%; min-width:0; }
+}
+
+@media screen and (max-width:600px) {
+  .calendar-grid { gap:6px; }
+  .calendar-day { min-height:66px; }
 }

@@ -13,7 +13,14 @@
 
   <header>
     <div class="logo">TW32</div>
-    <div class="hamburger">&#9776;</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <nav id="sideNav" class="side-nav" aria-hidden="true">
+      <button id="closeNav" class="close-nav">×</button>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calendar.html">Calendar & Dashboard</a></li>
+      </ul>
+    </nav>
   </header>
 
  <nav class="nav-bar">
@@ -21,43 +28,68 @@
   <p id="next-schedule">Next class: None</p>
 </nav>
 
-  
+<!-- Main content: organized two-column layout -->
 <section class="join">
-  <section class="day-details">
-    <p id="date">Date: --/--/----</p>
-    <p id="time">Time: 00:00:00</p>
-    <p id="day">Day: Monday</p>
-  </section>
+  <div class="left-col">
+    <section class="day-details">
+      <p id="date">Date: --/--/----</p>
+      <p id="time">Time: 00:00:00</p>
+      <p id="day">Day: Monday</p>
+    </section>
 
-  <section class="schedule">
-  <select id="dayDropdown" class="day-dropdown" onchange="showSchedule(this.value, this)">
-    <option value="Tuesday">Tuesday</option>
-    <option value="Wednesday">Wednesday</option>
-    <option value="Thursday">Thursday</option>
-    <option value="Friday">Friday</option>
-    <option value="Saturday">Saturday</option>
-  </select>
-  </section>
-  
+    <section class="schedule">
+      <select id="dayDropdown" class="day-dropdown" onchange="showSchedule(this.value, this)">
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+      </select>
+    </section>
 
-<section id="scheduleDisplay"></section>
+    <section id="scheduleDisplay"></section>
+  </div>
 
+  <aside class="right-col">
+    <section class="mini-dashboard">
+      <h3>Mini Dashboard</h3>
+      <p>Selected date: <span id="miniSelectedDate">None</span></p>
+      <label><input type="checkbox" id="miniAutoControl" /> Auto Take Control Warnings</label>
+      <ul id="miniUpcomingList"></ul>
+    </section>
 
-  <section class="note-of-day">
-    <h3>Note of the Day (Checklist)</h3>
-    <input type="text" id="taskInput" placeholder="Add a task..." />
-    <button onclick="addTask()">Add</button>
-    <ul id="taskList"></ul>
-    <button onclick="downloadTasks()">Save Tasks to File</button>
-  </section>
+    <section class="note-of-day">
+      <h3>Note of the Day (Checklist)</h3>
+      <input type="text" id="taskInput" placeholder="Add a task..." />
+      <button onclick="addTask()">Add</button>
+      <ul id="taskList"></ul>
+      <button onclick="downloadTasks()">Save Tasks to File</button>
+    </section>
+  </aside>
+</section>
 
-
-    <footer>
+<footer>
   <a href="https://solar.feutech.edu.ph/user/profile" target="_blank" style="font-size:0.98rem;color:#388e3c;font-weight:500;text-decoration:none;">Go to FEU Tech Solar Profile</a>
-    </footer>
+</footer>
 
-    <!-- Schedule Display Section -->
-    <script src="script.js"></script>
+<!-- Load main script once -->
+<script src="script.js"></script>
+    <script>
+      // Hamburger - open/close side nav
+      document.addEventListener('DOMContentLoaded', () => {
+        const ham = document.getElementById('hamburger');
+        const side = document.getElementById('sideNav');
+        const close = document.getElementById('closeNav');
+        ham && ham.addEventListener('click', () => {
+          side.style.transform = 'translateX(0)';
+          side.setAttribute('aria-hidden', 'false');
+        });
+        close && close.addEventListener('click', () => {
+          side.style.transform = '';
+          side.setAttribute('aria-hidden', 'true');
+        });
+      });
+    </script>
     <script>
       // Auto-select today's day in the dropdown
       document.addEventListener('DOMContentLoaded', function() {
