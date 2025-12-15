@@ -359,7 +359,7 @@ th {
 .dashboard-item .muted { color:#666; font-size:0.95rem; }
 .task-actions button { margin-left:6px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer; }
 .task-actions button:hover { opacity:0.95; }
-.take-control-btn { background:#ff9800; color:#fff; }
+.take-control-btn { display:none; }
 .warning { background:#ffeb3b; color:#222; padding:4px 8px; border-radius:8px; margin-left:8px; font-weight:600; }
 .warning.overdue { background:#f44336; color:#fff; }
 .needs-control { box-shadow:0 0 0 3px rgba(255,152,0,0.12); }
@@ -378,7 +378,7 @@ th {
 .mini-dashboard-item { padding:8px 6px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center; }
 .mini-dashboard .muted { color:#666; }
 .mini-actions button { margin-left:6px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer; }
-.take-control-mini { background:#ff9800; color:#fff; }
+.take-control-mini { display:none; }
 .mini-warning { background:#ffeb3b; color:#222; padding:4px 8px; border-radius:8px; margin-left:8px; font-weight:600; }
 .mini-warning.overdue { background:#f44336; color:#fff; }
 

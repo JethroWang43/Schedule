@@ -2,8 +2,8 @@
 const chatBox = () => document.getElementById('chatBox');
 const inputEl = () => document.getElementById('chatInput');
 
-const N8N_ENDPOINT_KEY = 'n8n_webhook_endpoint_v1';
-const DEFAULT_N8N_ENDPOINT = 'http://localhost:5678/webhook/53c136fe-3e77-4709-a143-fe82746dd8b6';
+const DEFAULT_N8N_ENDPOINT = ''; // disable n8n by default; use Puter/local instead
+const CHAT_TIMEOUT_MS = 30000; // give Claude time to respond (30s)
 
 // Local lightweight bot endpoint (simple-bot)
 const LOCAL_ENDPOINT_KEY = 'local_chat_endpoint_v1';
@@ -18,16 +18,122 @@ let awaitingScheduleDay = false;
 function getN8nEndpoint(){ return localStorage.getItem(N8N_ENDPOINT_KEY) || DEFAULT_N8N_ENDPOINT; }
 function setN8nEndpoint(url){ if(!url) localStorage.removeItem(N8N_ENDPOINT_KEY); else localStorage.setItem(N8N_ENDPOINT_KEY, url); }
 
+function withTimeout(promise, ms = CHAT_TIMEOUT_MS){
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
+async function fetchWithTimeout(url, options = {}, ms = CHAT_TIMEOUT_MS){
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+// Lightweight client for Puter.js (Claude via puter.ai.chat, no API key required)
+const PUTER_MODEL = 'claude-sonnet-4-5';
+
+// Build schedule context from the global schedule data
+function getScheduleContext(){
+  if(!window.dummyData) return '';
+  const lines = [];
+  for(const [day, classes] of Object.entries(window.dummyData)){
+    if(!Array.isArray(classes) || classes.length === 0) continue;
+    lines.push(`${day}:`);
+    for(const cls of classes){
+      const course = cls.course || 'N/A';
+      const time = cls.time || 'N/A';
+      const subject = cls.subject || 'N/A';
+      const room = cls.room || 'N/A';
+      lines.push(`  - ${course}: ${subject} (${time}) @ ${room}`);
+    }
+  }
+  return lines.length > 0 ? 'My Schedule:\n' + lines.join('\n') : '';
+}
+
+// Get today's day of the week and tomorrow's day
+function getCurrentDayInfo(){
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const now = new Date();
+  const todayIndex = now.getDay();
+  const todayName = days[todayIndex];
+  const tomorrowIndex = (todayIndex + 1) % 7;
+  const tomorrowName = days[tomorrowIndex];
+  return { today: todayName, tomorrow: tomorrowName, todayIndex, tomorrowIndex };
+}
+
+async function tryPuterChat(message){
+  if(typeof window === 'undefined' || !window.puter || !puter.ai || typeof puter.ai.chat !== 'function') return null;
+  try{
+    const scheduleContext = getScheduleContext();
+    const dayInfo = getCurrentDayInfo();
+    const dayContext = `Today is ${dayInfo.today}. Tomorrow is ${dayInfo.tomorrow}.`;
+    const contextMsg = scheduleContext 
+      ? `${dayContext}\n\n${scheduleContext}\n\nUser question: ${message}\n\nPlease respond in English only and reference my schedule if relevant.`
+      : `${dayContext}\n\nUser question: ${message}\n\nPlease respond in English only.`;
+    const res = await withTimeout(puter.ai.chat(contextMsg, { model: PUTER_MODEL }));
+    if(!res) return null;
+    // Prefer the textual content if provided
+    const reply = extractReplyFromResponse(res);
+    return reply || null;
+  }catch(err){
+    console.warn('Puter chat failed', err);
+    return null;
+  }
+}
+
 function appendMessage(text, who='bot'){
   const box = chatBox();
   const row = document.createElement('div');
   row.className = `message ${who}`;
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  bubble.textContent = text;
+  
+  // For bot messages, render as HTML (supports markdown-style formatting)
+  if(who === 'bot'){
+    bubble.innerHTML = simpleMarkdownToHtml(text);
+  } else {
+    bubble.textContent = text;
+  }
+  
   row.appendChild(bubble);
   box.appendChild(row);
   box.scrollTop = box.scrollHeight;
+}
+
+// Simple markdown-to-HTML converter for better readability
+function simpleMarkdownToHtml(text){
+  if(!text) return '';
+  let html = escapeHtml(text);
+  
+  // Headers: # Title, ## Title, ### Title
+  html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+  
+  // Bold: **text** or __text__
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+  
+  // Italic: *text* or _text_
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+  
+  // Line breaks
+  html = html.replace(/\n/g, '<br>');
+  
+  return html;
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, function(s){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s];
+  });
 }
 
 function clearChat(){ document.getElementById('chatBox').innerHTML=''; }
@@ -52,6 +158,13 @@ function getRecentTasksContext(limit=6){
 function extractReplyFromResponse(data){
   if(!data) return '';
   if(typeof data === 'string') return data;
+  // Claude via Puter.js returns response.message.content as an array of blocks
+  if(data.message && Array.isArray(data.message.content)){
+    return data.message.content.map(block => block.text || '').join('');
+  }
+  if(data.message && data.message.content) return data.message.content;
+  if(Array.isArray(data)) return data.map(block => block.text || '').join('');
+  if(data.content) return data.content;
   if(data.text) return data.text;
   if(data.reply) return data.reply;
   if(data.result) return data.result;
@@ -88,12 +201,6 @@ function formatScheduleHTML(day, entries){
   `;
 }
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, function(s){
-    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s];
-  });
-}
-
 function addTaskToLocalStorage(task){
   try{
     const raw = localStorage.getItem('sw_tasks_v1');
@@ -121,7 +228,22 @@ function localFallbackReply(text){
     return 'No saved tasks yet. (If you asked for your calendar schedule, the site may be missing schedule data — ensure the Calendar data file is loaded.)';
   }
   if(t.includes('help')) return 'Ask me about your tasks or say "add task".';
-  return "I'm offline right now — try running the n8n workflow or a local proxy for smarter replies.";
+  // Generic offline response with actionable steps
+  return "I couldn't reach the AI service. Please ensure you're online and https://js.puter.com/v2/ loads (check DevTools > Network). If blocked, you can set a local endpoint at http://localhost:3002. Meanwhile, I'm giving this basic offline reply.";
+}
+
+// Quick local answers for simple arithmetic to reduce backend calls
+function tryLocalQuickAnswer(text){
+  const expr = text.replace(/[^0-9+\-*/(). ]/g, '').trim();
+  if(!expr) return null;
+  // Only allow digits and basic operators to avoid unsafe eval
+  if(/[^0-9+\-*/(). ]/.test(expr)) return null;
+  try {
+    // eslint-disable-next-line no-eval
+    const val = eval(expr);
+    if(typeof val === 'number' && isFinite(val)) return `${expr} = ${val}`;
+  } catch(e) { return null; }
+  return null;
 }
 
 async function tryN8n(message){
@@ -129,7 +251,7 @@ async function tryN8n(message){
   if(!url) return '';
   try{
     const payload = { message, tasksContext: getRecentTasksContext(6) };
-    const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const res = await fetchWithTimeout(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
     if(!res) return '';
     if(res.ok){
       const data = await res.json().catch(()=>null);
@@ -150,7 +272,7 @@ async function tryLocalChat(message){
   if(!url) return null;
   try{
     const payload = { message, tasksContext: getRecentTasksContext(6) };
-    const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const res = await fetchWithTimeout(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
     if(!res) return null;
     if(res.ok){
       const data = await res.json().catch(()=>null);
@@ -166,7 +288,26 @@ async function sendChat(){
   appendMessage(text, 'user');
   inputEl().value = '';
   const box = chatBox();
-  appendMessage('Thinking...', 'bot');
+  // Create an animated thinking bubble
+  const row = document.createElement('div');
+  row.className = 'message bot';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  const thinking = document.createElement('div');
+  thinking.className = 'thinking';
+  thinking.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  bubble.appendChild(thinking);
+  row.appendChild(bubble);
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+
+  // Quick local answer path
+  const quick = tryLocalQuickAnswer(text);
+  if(quick){
+    const lastBot = box.querySelector('.message.bot:last-child .bubble');
+    if(lastBot) lastBot.textContent = quick;
+    return;
+  }
 
   // Local schedule handling: two-step flow
   try{
@@ -228,9 +369,9 @@ async function sendChat(){
     }
   }catch(e){ console.warn('schedule lookup failed', e); }
 
-  // try n8n webhook first (if configured)
-  let data = await tryN8n(text);
-  // if n8n not available or returned nothing, try local simple-bot endpoint
+  // try Puter.js GLM (no key) first, then n8n, then local simple-bot
+  let data = await tryPuterChat(text);
+  if(!data) data = await tryN8n(text);
   if(!data) data = await tryLocalChat(text);
 
   // If we got a structured reply object, handle action and text

@@ -58,10 +58,10 @@ function renderDashboard(){
   const ul = document.getElementById('upcomingList'); ul.innerHTML='';
   const tasks = loadTasks(); const now = new Date();
   const upcoming = tasks.filter(t=>!t.completed).map(t=>({...t, dt: new Date(t.date + (t.time? 'T'+t.time : 'T00:00'))})).sort((a,b)=>a.dt-b.dt).slice(0,20);
-  const autoControl = document.getElementById('autoControlToggle')?.checked;
+  const autoControl = false;
   for(let t of upcoming){ const li = document.createElement('li'); li.className='dashboard-item'; const when = t.time? `${t.date} ${t.time}` : t.date; li.innerHTML = `<div><strong>${t.title}</strong> <span class="muted">(${t.category})</span><br><small>${when}</small></div>`;
-    const actions = document.createElement('div'); actions.className='task-actions'; const doneBtn = document.createElement('button'); doneBtn.textContent = t.completed? 'Undo' : 'Done'; doneBtn.onclick = ()=>toggleComplete(t.id); const controlBtn = document.createElement('button'); controlBtn.textContent='Take Control'; controlBtn.className='take-control-btn'; controlBtn.onclick = ()=>takeControl(t.id);
-    actions.appendChild(doneBtn); actions.appendChild(controlBtn); li.appendChild(actions);
+    const actions = document.createElement('div'); actions.className='task-actions'; const doneBtn = document.createElement('button'); doneBtn.textContent = t.completed? 'Undo' : 'Done'; doneBtn.onclick = ()=>toggleComplete(t.id);
+    actions.appendChild(doneBtn); li.appendChild(actions);
     const diffMs = t.dt - now; const diffHours = diffMs / (1000*60*60);
     if(diffHours <= 24 && diffHours >= 0){ const warn = document.createElement('span'); warn.className='warning'; warn.textContent='Due soon'; li.appendChild(warn); if(autoControl) li.classList.add('needs-control'); }
     if(diffHours < 0){ const overdue = document.createElement('span'); overdue.className='warning overdue'; overdue.textContent='Overdue'; li.appendChild(overdue); if(autoControl) takeControl(t.id); }
@@ -73,7 +73,7 @@ function addCalendarTask(e){ e && e.preventDefault(); const title = document.get
 
 function toggleComplete(id){ const tasks = loadTasks(); const t = tasks.find(x=>x.id===id); if(!t) return; t.completed = !t.completed; t.status = t.completed? 'done':'scheduled'; saveTasks(tasks); renderCalendar(calendarMonth, calendarYear); renderDashboard(); }
 
-function takeControl(id){ const tasks = loadTasks(); const t = tasks.find(x=>x.id===id); if(!t) return; t.status = 'in-progress'; saveTasks(tasks); renderDashboard(); alert(`Taking control of task: ${t.title}`); }
+// Removed takeControl functionality
 
 function clearAllTasks(){ if(!confirm('Clear all saved tasks?')) return; saveTasks([]); renderCalendar(calendarMonth, calendarYear); renderDashboard(); }
 
@@ -83,5 +83,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('nextMonth').addEventListener('click', ()=>{ calendarMonth +=1; if(calendarMonth>11){ calendarMonth=0; calendarYear+=1;} renderCalendar(calendarMonth, calendarYear); });
   document.getElementById('taskForm').addEventListener('submit', addCalendarTask);
   document.getElementById('clearTasksBtn').addEventListener('click', clearAllTasks);
-  document.getElementById('autoControlToggle').addEventListener('change', renderDashboard);
+  // Removed auto control toggle listener
 });
