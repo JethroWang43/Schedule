@@ -15,6 +15,29 @@ function setLocalEndpoint(url){ if(!url) localStorage.removeItem(LOCAL_ENDPOINT_
 // In-memory dialog state for follow-up schedule questions
 let awaitingScheduleDay = false;
 
+// Persist chat HTML exactly as rendered so formatting is preserved
+const CHAT_STORAGE_KEY = 'sw_chat_html_v1';
+
+function persistChat(){
+  try{
+    const box = chatBox();
+    if(!box) return;
+    localStorage.setItem(CHAT_STORAGE_KEY, box.innerHTML);
+  }catch(e){ /* ignore */ }
+}
+
+function restoreChat(){
+  try{
+    const html = localStorage.getItem(CHAT_STORAGE_KEY);
+    if(!html) return false;
+    const box = chatBox();
+    if(!box) return false;
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+    return true;
+  }catch(e){ return false; }
+}
+
 function getN8nEndpoint(){ return localStorage.getItem(N8N_ENDPOINT_KEY) || DEFAULT_N8N_ENDPOINT; }
 function setN8nEndpoint(url){ if(!url) localStorage.removeItem(N8N_ENDPOINT_KEY); else localStorage.setItem(N8N_ENDPOINT_KEY, url); }
 
@@ -104,6 +127,8 @@ function appendMessage(text, who='bot'){
   row.appendChild(bubble);
   box.appendChild(row);
   box.scrollTop = box.scrollHeight;
+  // Save after each appended message
+  persistChat();
 }
 
 // Simple markdown-to-HTML converter for better readability
@@ -136,7 +161,11 @@ function escapeHtml(str){
   });
 }
 
-function clearChat(){ document.getElementById('chatBox').innerHTML=''; }
+function clearChat(){
+  const box = document.getElementById('chatBox');
+  if(box) box.innerHTML='';
+  try{ localStorage.removeItem(CHAT_STORAGE_KEY); }catch(e){ /* ignore */ }
+}
 
 function getRecentTasksContext(limit=6){
   try{
@@ -306,6 +335,7 @@ async function sendChat(){
   if(quick){
     const lastBot = box.querySelector('.message.bot:last-child .bubble');
     if(lastBot) lastBot.textContent = quick;
+    persistChat();
     return;
   }
 
@@ -330,17 +360,20 @@ async function sendChat(){
           if(Array.isArray(entries) && entries.length>0){
             const lastBot = box.querySelector('.message.bot:last-child .bubble');
             if(lastBot) lastBot.innerHTML = formatScheduleHTML(key, entries);
+            persistChat();
             return;
           }
         }
         const lastBot = box.querySelector('.message.bot:last-child .bubble');
         if(lastBot) lastBot.textContent = `No schedule available for ${foundDay}.`;
+        persistChat();
         return;
       }
       // no day recognized
       const lastBot = box.querySelector('.message.bot:last-child .bubble');
       if(lastBot) lastBot.textContent = 'Sorry, I did not recognize that day. Please reply with one day (Monday to Sunday).';
       awaitingScheduleDay = true; // ask again
+      persistChat();
       return;
     }
 
@@ -349,6 +382,7 @@ async function sendChat(){
       const lastBot = box.querySelector('.message.bot:last-child .bubble');
       if(lastBot) lastBot.textContent = 'Which day would you like to see? Please reply with Monday..Sunday.';
       awaitingScheduleDay = true;
+      persistChat();
       return;
     }
 
@@ -360,11 +394,13 @@ async function sendChat(){
         if(Array.isArray(entries) && entries.length>0){
           const lastBot = box.querySelector('.message.bot:last-child .bubble');
           if(lastBot) lastBot.innerHTML = formatScheduleHTML(key, entries);
+          persistChat();
           return;
         }
       }
       const lastBot = box.querySelector('.message.bot:last-child .bubble');
       if(lastBot) lastBot.textContent = `No schedule available for ${foundDay}.`;
+      persistChat();
       return;
     }
   }catch(e){ console.warn('schedule lookup failed', e); }
@@ -383,15 +419,17 @@ async function sendChat(){
       addTaskToLocalStorage(data.action.task);
       const confirmation = replyText || (`Task added: ${data.action.task.title}`);
       if(lastBot) lastBot.textContent = confirmation;
+      persistChat();
       return;
     }
     if(data.action && data.action.type === 'show_schedule'){
       // show schedule: prefer structured tasks_text from server, otherwise replyText
       const ttext = (data.action.tasks_text && String(data.action.tasks_text).trim()) || replyText || 'No tasks found.';
       if(lastBot) lastBot.textContent = ttext;
+      persistChat();
       return;
     }
-    if(replyText){ if(lastBot) lastBot.textContent = replyText; return; }
+    if(replyText){ if(lastBot) lastBot.textContent = replyText; persistChat(); return; }
   }
 
   // fallback to local responder text
@@ -399,6 +437,7 @@ async function sendChat(){
     const r = localFallbackReply(text);
     const lastBot = box.querySelector('.message.bot:last-child .bubble');
     if(lastBot) lastBot.textContent = r;
+    persistChat();
   }, 300);
 }
 
@@ -412,7 +451,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(resetBtn) resetBtn.addEventListener('click', ()=>{ setN8nEndpoint(null); if(ep) ep.value = getN8nEndpoint(); alert('n8n endpoint reset to default: ' + getN8nEndpoint()); });
 
   document.getElementById('sendBtn').addEventListener('click', sendChat);
-  document.getElementById('resetBtn').addEventListener('click', ()=>{ clearChat(); appendMessage('Hello — I am your assistant. Ask me about your schedule or tasks.'); });
+  document.getElementById('resetBtn').addEventListener('click', ()=>{ 
+    clearChat(); 
+    appendMessage('Hello — I am your assistant. Ask me about your schedule or tasks.'); 
+  });
   document.getElementById('chatInput').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') sendChat(); });
-  appendMessage('Hello — I am your assistant. Ask me about your schedule or tasks.');
+
+  // Try to restore previous chat; if none, show greeting
+  const restored = restoreChat();
+  if(!restored){
+    appendMessage('Hello — I am your assistant. Ask me about your schedule or tasks.');
+  }
 });

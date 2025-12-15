@@ -24,9 +24,13 @@
     .message.bot .bubble li { margin:4px 0; }
     .message.bot .bubble code { background:#e0e0e0; padding:2px 6px; border-radius:3px; font-family:monospace; }
     .message.bot .bubble blockquote { border-left:3px solid #4CAF50; padding-left:10px; margin:8px 0; color:#666; }
-    .chat-controls { display:flex; gap:8px; margin-top:10px; }
+    .chat-controls { display:flex; gap:8px; margin-top:10px; align-items:center; }
     .chat-controls input[type="text"] { flex:1; padding:10px; border-radius:8px; border:1px solid #ddd; }
     .chat-controls button { padding:10px 14px; border-radius:8px; border:none; background:#4CAF50; color:#fff; cursor:pointer; }
+    .chat-controls .icon-btn { width:42px; height:42px; padding:0; display:grid; place-items:center; border-radius:10px; }
+    .chat-controls .icon-btn svg { width:22px; height:22px; fill:#fff; }
+    .chat-controls #resetBtn { background:#e0e0e0; color:#222; }
+    .chat-controls #resetBtn svg { fill:#222; }
 
     /* Thinking animation bubble */
     .thinking { display:inline-flex; align-items:center; gap:6px; }
@@ -40,8 +44,10 @@
       .chat-page { padding: 12px; margin: 10px auto; }
       .chat-box { height: 60vh; }
       .message .bubble { max-width: 88%; font-size: 0.95rem; }
-      .chat-controls { flex-direction: column; }
-      .chat-controls button { width: 100%; }
+      /* Keep controls inline beside the input on mobile too */
+      .chat-controls { flex-direction: row; }
+      .chat-controls button { width: auto; }
+      .chat-controls .icon-btn { width:40px; height:40px; }
     }
   </style>
 </head>
@@ -70,8 +76,14 @@
 
     <div class="chat-controls">
       <input id="chatInput" type="text" placeholder="Ask about your schedule, tasks, or general questions..." />
-      <button id="sendBtn">Send</button>
-      <button id="resetBtn" style="background:#e0e0e0;color:#222">Reset</button>
+      <button id="sendBtn" class="icon-btn" aria-label="Send" title="Send">
+        <!-- Paper plane icon -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+      <button id="resetBtn" class="icon-btn" aria-label="Reset chat" title="Reset chat">
+        <!-- Trash can icon -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-1v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H3V5h5V4a1 1 0 0 1 1-1zm8 4H7v12h10V7zM9 9h2v8H9V9zm4 0h2v8h-2V9z"/></svg>
+      </button>
     </div>
   </main>
 
