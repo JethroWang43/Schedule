@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="shortcut icon" href="./images/favicon.png" type="image/x-icon">
+  <title>Weekly Workout - Schedule Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://js.puter.com/v2/"></script>
+  <style>
+    .workout-page {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 18px;
+    }
+
+    .workout-container {
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .day-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+      border-left: 5px solid #4CAF50;
+    }
+
+    .day-card.rest-day {
+      border-left-color: #ff9800;
+      background: #fff8f0;
+    }
+
+    .day-card h3 {
+      margin: 0 0 12px 0;
+      color: #222;
+      font-size: 1.2rem;
+    }
+
+    .rest-badge {
+      display: inline-block;
+      background: #ff9800;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    .exercise-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .exercise-item {
+      background: #f9f9f9;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border-left: 3px solid #4CAF50;
+    }
+
+    .exercise-item.rest {
+      background: #fff3e0;
+      border-left-color: #ff9800;
+      text-align: center;
+      font-weight: 600;
+      color: #ff9800;
+    }
+
+    .exercise-name {
+      font-weight: 600;
+      color: #222;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .exercise-details {
+      font-size: 0.95rem;
+      color: #666;
+      margin: 4px 0;
+    }
+
+    .rest-timer {
+      margin-top: 20px;
+      padding: 16px;
+      background: #e3f2fd;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .rest-timer h4 {
+      margin: 0 0 12px 0;
+      color: #1976d2;
+    }
+
+    .timer-display {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #1976d2;
+      font-family: 'Courier New', monospace;
+      margin: 12px 0;
+      padding: 16px;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .timer-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #1976d2;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .timer-btn:hover {
+      background: #1565c0;
+    }
+
+    .timer-btn.reset {
+      background: #f57c00;
+    }
+
+    .timer-btn.reset:hover {
+      background: #e65100;
+    }
+
+    .preset-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      justify-content: center;
+    }
+
+    .preset-btn {
+      padding: 6px 12px;
+      border: 1px solid #1976d2;
+      background: white;
+      color: #1976d2;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: #1976d2;
+      color: white;
+    }
+
+    .legend {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .legend h4 {
+      margin: 0 0 12px 0;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 20px;
+      margin-bottom: 8px;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border-left: 4px solid;
+    }
+
+    .legend-color.workout {
+      border-left-color: #4CAF50;
+    }
+
+    .legend-color.rest {
+      border-left-color: #ff9800;
+    }
+
+    .workout-summary {
+      background: #e8f5e9;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 5px solid #4CAF50;
+    }
+
+    .workout-summary h3 {
+      margin: 0 0 8px 0;
+      color: #2e7d32;
+    }
+
+    .summary-text {
+      color: #333;
+      line-height: 1.6;
+      margin: 6px 0;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .workout-container {
+        grid-template-columns: 1fr;
+      }
+
+      .timer-display {
+        font-size: 2rem;
+      }
+
+      .legend-item {
+        display: block;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">TW32</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <nav id="sideNav" class="side-nav" aria-hidden="true">
+      <button id="closeNav" class="close-nav">×</button>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calendar.html">Calendar & Dashboard</a></li>
+        <li><a href="chat.html">AI Chatbot</a></li>
+        <li><a href="workout.html">Weekly Workout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="workout-page">
+    <h2>Weekly Workout Plan</h2>
+    <p style="color: #666; margin-bottom: 20px;">Full Body Workout - Bench & Dumbbells Only</p>
+
+    <div class="workout-summary">
+      <h3>Your Workout Summary</h3>
+      <div class="summary-text"><strong>Equipment:</strong> Bench, Dumbbells</div>
+      <div class="summary-text"><strong>Focus:</strong> Full Body Strength</div>
+      <div class="summary-text"><strong>Rest Days:</strong> Monday & Thursday</div>
+      <div class="summary-text"><strong>Rest Between Sets:</strong> 60-90 seconds (use timer below)</div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+      <button onclick="previousDay()" style="padding: 10px 16px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">← Previous</button>
+      <select id="daySelect" onchange="selectDay(this.value)" style="padding: 10px 16px; border: 2px solid #4CAF50; border-radius: 6px; background: white; font-size: 1rem; cursor: pointer; font-weight: 600;">
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+      </select>
+      <button onclick="nextDay()" style="padding: 10px 16px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Next →</button>
+    </div>
+
+    <div id="workoutContainer">
+      <!-- Current day will be populated by JavaScript -->
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px; background: #f0f8ff; border-radius: 8px; border-left: 5px solid #1976d2;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0; color: #1976d2;">🍽️ AI Meal Suggestion</h3>
+        <button id="generateBtn" onclick="generateAIMeal()" style="padding: 8px 16px; background: #1976d2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#1976d2'">Generate</button>
+      </div>
+      <div id="mealSuggestion" style="font-size: 0.95rem; color: #333; line-height: 1.6; min-height: 60px; display: flex; align-items: center;">
+        <span style="color: #999;">Click "Generate" to get an AI meal suggestion</span>
+      </div>
+    </div>
+
+    <div class="rest-timer">
+      <h4>Rest Timer</h4>
+      <div class="preset-buttons">
+        <button class="preset-btn" onclick="setTimer(30)">30s</button>
+        <button class="preset-btn" onclick="setTimer(60)">60s</button>
+        <button class="preset-btn" onclick="setTimer(90)">90s</button>
+        <button class="preset-btn" onclick="setTimer(120)">2m</button>
+      </div>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <div class="timer-controls">
+        <button class="timer-btn" onclick="startTimer()">Start</button>
+        <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://solar.feutech.edu.ph/user/profile" target="_blank" style="font-size:0.98rem;color:#388e3c;font-weight:500;text-decoration:none;">Go to FEU Tech Solar Profile</a>
+  </footer>
+
+  <script src="workout.js"></script>
+  <script>
+    // Hamburger menu
+    document.addEventListener('DOMContentLoaded', () => {
+      const ham = document.getElementById('hamburger');
+      const side = document.getElementById('sideNav');
+      const close = document.getElementById('closeNav');
+      ham && ham.addEventListener('click', () => {
+        side.style.transform = 'translateX(0)';
+        side.setAttribute('aria-hidden', 'false');
+      });
+      close && close.addEventListener('click', () => {
+        side.style.transform = '';
+        side.setAttribute('aria-hidden', 'true');
+      });
+    });
+  </script>
+</body>
+</html>
