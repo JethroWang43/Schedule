@@ -59,6 +59,14 @@
   margin-bottom: 16px;
 }
 
+.schedule-editor-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .schedule-editor-header h3,
 .schedule-list-card h3,
 .schedule-day-group h4 {
@@ -189,6 +197,18 @@
   color: #555;
 }
 
+.schedule-link-status {
+  font-weight: 700;
+}
+
+.schedule-link-status.ok {
+  color: #15803d;
+}
+
+.schedule-link-status.missing {
+  color: #b91c1c;
+}
+
 .schedule-empty {
   color: #777;
 }
@@ -272,6 +292,15 @@
 }
 
 @media screen and (max-width: 992px) {
+  .schedule-editor-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .schedule-editor-header-actions {
+    justify-content: flex-start;
+  }
+
   .schedule-editor-time-row {
     grid-template-columns: 1fr;
   }

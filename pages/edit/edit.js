@@ -2,6 +2,80 @@
 
 let currentScheduleEditorTab = 'scheduleFormTab';
 let currentSavedScheduleDay = 'Monday';
+const ALL_DAYS_FILTER_VALUE = '__ALL_DAYS__';
+const OFFLINE_SYNC_VERSION = '1.0';
+
+function buildOfflineSyncPayload() {
+  const keys = [
+    'sw_schedule_v1',
+    'sw_schedule_version',
+    'sw_note_tasks_v1',
+    'sw_tasks_v1',
+    'sw_selected_date',
+    'workoutTimerState'
+  ];
+
+  const data = {};
+  keys.forEach((key) => {
+    data[key] = localStorage.getItem(key);
+  });
+
+  return {
+    version: OFFLINE_SYNC_VERSION,
+    exportedAt: new Date().toISOString(),
+    data
+  };
+}
+
+function exportOfflineSyncData() {
+  try {
+    const payload = buildOfflineSyncPayload();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    a.href = url;
+    a.download = `schedule-tracker-sync-${stamp}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    alert('Failed to export sync file. Please try again.');
+  }
+}
+
+function importOfflineSyncDataFromFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(String(reader.result || '{}'));
+      if (!payload || typeof payload !== 'object' || !payload.data || typeof payload.data !== 'object') {
+        alert('Invalid sync file format.');
+        return;
+      }
+
+      const entries = Object.entries(payload.data);
+      entries.forEach(([key, value]) => {
+        if (value === null || value === undefined) {
+          localStorage.removeItem(key);
+        } else {
+          localStorage.setItem(key, String(value));
+        }
+      });
+
+      window.dummyData = getSchedule();
+      renderScheduleEditor('scheduleSavedTab');
+      alert('Sync import complete. Your data has been restored.');
+    } catch (error) {
+      alert('Could not import file. Please choose a valid sync JSON file.');
+    }
+  };
+
+  reader.onerror = () => {
+    alert('Failed to read file. Please try again.');
+  };
+
+  reader.readAsText(file);
+}
 
 function toInputTime(time12h) {
   if (!time12h || typeof time12h !== 'string') return '';
@@ -71,7 +145,7 @@ function renderScheduleEditor(activeTab = currentScheduleEditorTab) {
   const schedule = getSchedule();
   currentScheduleEditorTab = activeTab;
 
-  if (!WEEK_DAYS.includes(currentSavedScheduleDay)) {
+  if (currentSavedScheduleDay !== ALL_DAYS_FILTER_VALUE && !WEEK_DAYS.includes(currentSavedScheduleDay)) {
     currentSavedScheduleDay = WEEK_DAYS[0];
   }
 
@@ -85,7 +159,12 @@ function renderScheduleEditor(activeTab = currentScheduleEditorTab) {
       <div class="schedule-editor-card">
         <div class="schedule-editor-header">
           <h3>My Schedule</h3>
-          <button type="button" id="restoreDefaultScheduleBtn" class="schedule-secondary-btn">Restore Default</button>
+          <div class="schedule-editor-header-actions">
+            <button type="button" id="restoreDefaultScheduleBtn" class="schedule-secondary-btn">Restore Default</button>
+            <button type="button" id="exportSyncDataBtn" class="schedule-secondary-btn">Export Sync</button>
+            <button type="button" id="importSyncDataBtn" class="schedule-secondary-btn">Import Sync</button>
+            <input type="file" id="importSyncDataInput" accept="application/json" hidden />
+          </div>
         </div>
         <form id="scheduleEditorForm" class="schedule-editor-form">
           <label>
@@ -132,36 +211,49 @@ function renderScheduleEditor(activeTab = currentScheduleEditorTab) {
           <label class="schedule-filter-label" for="scheduleSavedDaySelect">
             <span class="visually-hidden">Day</span>
             <select id="scheduleSavedDaySelect" class="schedule-saved-day-select">
+              <option value="${ALL_DAYS_FILTER_VALUE}" ${currentSavedScheduleDay === ALL_DAYS_FILTER_VALUE ? 'selected' : ''}>Show all</option>
               ${WEEK_DAYS.map(day => `<option value="${day}" ${day === currentSavedScheduleDay ? 'selected' : ''}>${day}</option>`).join('')}
             </select>
           </label>
         </div>
 
         ${(() => {
-          const entries = schedule[currentSavedScheduleDay] || [];
-          const items = entries.length
-            ? entries.map((item, index) => `
-                <li>
-                  <div class="schedule-item-text">
-                    <strong>${item.course}</strong>
-                    <span>${item.time}</span>
-                    <span>${item.subject}</span>
-                    <small>${item.room}</small>
-                  </div>
-                  <div class="schedule-item-actions">
-                    <button type="button" class="schedule-edit-btn" data-day="${currentSavedScheduleDay}" data-index="${index}">Edit</button>
-                    <button type="button" class="schedule-delete-btn" data-day="${currentSavedScheduleDay}" data-index="${index}">Delete</button>
-                  </div>
-                </li>
-              `).join('')
-            : '<li class="schedule-empty">No saved classes for this day yet.</li>';
+          const daysToRender = currentSavedScheduleDay === ALL_DAYS_FILTER_VALUE
+            ? WEEK_DAYS
+            : [currentSavedScheduleDay];
 
-          return `
-            <section class="schedule-day-group">
-              <h4>${currentSavedScheduleDay}</h4>
-              <ul>${items}</ul>
-            </section>
-          `;
+          return daysToRender.map(day => {
+            const entries = schedule[day] || [];
+            const items = entries.length
+              ? entries.map((item, index) => `
+                  <li>
+                    <div class="schedule-item-text">
+                      <strong>${item.course}</strong>
+                      <span>${item.time}</span>
+                      <span>${item.subject}</span>
+                      <small>${item.room}</small>
+                      ${(() => {
+                        const isOnlineClass = String(item.room || '').trim().toUpperCase() === 'ONLINE';
+                        if (!isOnlineClass) return '';
+                        const hasLink = Boolean(String(item.link || '').trim());
+                        return `<small class="schedule-link-status ${hasLink ? 'ok' : 'missing'}">${hasLink ? 'Link inserted' : 'Link missing'}</small>`;
+                      })()}
+                    </div>
+                    <div class="schedule-item-actions">
+                      <button type="button" class="schedule-edit-btn" data-day="${day}" data-index="${index}">Edit</button>
+                      <button type="button" class="schedule-delete-btn" data-day="${day}" data-index="${index}">Delete</button>
+                    </div>
+                  </li>
+                `).join('')
+              : '<li class="schedule-empty">No saved classes for this day yet.</li>';
+
+            return `
+              <section class="schedule-day-group">
+                <h4>${day}</h4>
+                <ul>${items}</ul>
+              </section>
+            `;
+          }).join('');
         })()}
       </div>
     </section>
@@ -219,6 +311,9 @@ function renderScheduleEditor(activeTab = currentScheduleEditorTab) {
 
   const form = document.getElementById('scheduleEditorForm');
   const restoreButton = document.getElementById('restoreDefaultScheduleBtn');
+  const exportSyncButton = document.getElementById('exportSyncDataBtn');
+  const importSyncButton = document.getElementById('importSyncDataBtn');
+  const importSyncInput = document.getElementById('importSyncDataInput');
   const modalForm = document.getElementById('scheduleModalForm');
   const modalCloseButton = document.getElementById('scheduleModalCloseBtn');
   const modalCancelButton = document.getElementById('scheduleModalCancelBtn');
@@ -234,6 +329,20 @@ function renderScheduleEditor(activeTab = currentScheduleEditorTab) {
 
   if (restoreButton) {
     restoreButton.addEventListener('click', restoreDefaultSchedule);
+  }
+
+  if (exportSyncButton) {
+    exportSyncButton.addEventListener('click', exportOfflineSyncData);
+  }
+
+  if (importSyncButton && importSyncInput) {
+    importSyncButton.addEventListener('click', () => importSyncInput.click());
+    importSyncInput.addEventListener('change', () => {
+      const file = importSyncInput.files && importSyncInput.files[0];
+      if (!file) return;
+      importOfflineSyncDataFromFile(file);
+      importSyncInput.value = '';
+    });
   }
 
   const savedDaySelect = document.getElementById('scheduleSavedDaySelect');

@@ -188,7 +188,7 @@
   outline: none;
 }
 
-.note-of-day button {
+.note-of-day > button {
   padding: 8px;
   background-color: #4caf50;
   color: white;
@@ -201,7 +201,7 @@
   margin-top: 10px;
 }
 
-.note-of-day button:hover {
+.note-of-day > button:hover {
   background-color: #45a049;
 }
 
@@ -290,6 +290,11 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+}
+
+.note-task-actions button {
+  width: 28px;
+  margin-top: 0;
 }
 
 .note-task-edit-btn {
