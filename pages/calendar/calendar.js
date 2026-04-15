@@ -77,11 +77,27 @@ function toggleComplete(id){ const tasks = loadTasks(); const t = tasks.find(x=>
 
 function clearAllTasks(){ if(!confirm('Clear all saved tasks?')) return; saveTasks([]); renderCalendar(calendarMonth, calendarYear); renderDashboard(); }
 
+function setCalendarTab(tabName) {
+  document.querySelectorAll('.calendar-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.calendar-tab-panel').forEach(panel => panel.classList.remove('active'));
+  
+  if (tabName === 'task') {
+    document.getElementById('calendarTaskTab').classList.add('active');
+    document.getElementById('calendarTaskPanel').classList.add('active');
+  } else if (tabName === 'overview') {
+    document.getElementById('calendarOverviewTab').classList.add('active');
+    document.getElementById('calendarOverviewPanel').classList.add('active');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
   const now = new Date(); calendarMonth = now.getMonth(); calendarYear = now.getFullYear(); renderCalendar(calendarMonth, calendarYear); renderDashboard();
   document.getElementById('prevMonth').addEventListener('click', ()=>{ calendarMonth -=1; if(calendarMonth<0){ calendarMonth=11; calendarYear-=1;} renderCalendar(calendarMonth, calendarYear); });
   document.getElementById('nextMonth').addEventListener('click', ()=>{ calendarMonth +=1; if(calendarMonth>11){ calendarMonth=0; calendarYear+=1;} renderCalendar(calendarMonth, calendarYear); });
   document.getElementById('taskForm').addEventListener('submit', addCalendarTask);
   document.getElementById('clearTasksBtn').addEventListener('click', clearAllTasks);
-  // Removed auto control toggle listener
+  
+  // Tab switching
+  document.getElementById('calendarTaskTab').addEventListener('click', () => setCalendarTab('task'));
+  document.getElementById('calendarOverviewTab').addEventListener('click', () => setCalendarTab('overview'));
 });

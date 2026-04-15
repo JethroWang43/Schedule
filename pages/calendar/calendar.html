@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="shortcut icon" href="../../assets/images/logo.png" type="image/x-icon">
+  <title>Calendar - Schedule Tracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header>
+    <img src="../../assets/images/logo.png" alt="Calendar & Dashboard Logo" class="header-logo" />
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <nav id="sideNav" class="side-nav" aria-hidden="true">
+      <button id="closeNav" class="close-nav">×</button>
+      <ul>
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="calendar.html">Calendar & Dashboard</a></li>
+        <li><a href="../chat/chat.html">AI Chatbot</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="calendar-layout py-4">
+    <section class="calendar card shadow-sm border-0 rounded-4 p-3">
+      <div class="calendar-header">
+        <button id="prevMonth" class="btn btn-outline-success btn-sm">&lt;</button>
+        <div class="month-year fw-semibold fs-5"><span id="calendarMonth"></span> <span id="calendarYear"></span></div>
+        <button id="nextMonth" class="btn btn-outline-success btn-sm">&gt;</button>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+      <p class="selected-date">Selected: <span id="selectedDate">None</span></p>
+    </section>
+
+    <aside class="panel">
+      <section class="calendar-tabs-section card shadow-sm border-0 rounded-4 p-3">
+        <div class="calendar-tabs" role="tablist">
+          <button class="calendar-tab active" id="calendarTaskTab" role="tab" aria-selected="true" aria-controls="calendarTaskPanel">Task Manager</button>
+          <button class="calendar-tab" id="calendarOverviewTab" role="tab" aria-selected="false" aria-controls="calendarOverviewPanel">Calendar Overview</button>
+        </div>
+
+        <div class="calendar-tab-panel active" id="calendarTaskPanel" role="tabpanel" aria-labelledby="calendarTaskTab">
+          <section class="task-manager">
+            <h3>Add Task to Calendar</h3>
+            <form id="taskForm">
+              <input type="text" id="taskTitle" placeholder="Task title" required />
+              <input type="date" id="taskDate" required />
+              <input type="time" id="taskTime" />
+              <input type="text" id="taskCategory" placeholder="Category (e.g. Study, Work)" />
+              <div class="d-flex gap-2 flex-wrap mt-2">
+                <button type="submit" class="btn btn-success">Add to Calendar</button>
+                <button type="button" id="clearTasksBtn" class="btn btn-outline-danger">Clear All Tasks</button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <div class="calendar-tab-panel" id="calendarOverviewPanel" role="tabpanel" aria-labelledby="calendarOverviewTab">
+          <section class="dashboard">
+            <h3>Calendar Overview</h3>
+            <ul id="upcomingList"></ul>
+          </section>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer>
+    <a href="https://solar.feutech.edu.ph/user/profile" target="_blank">Go to FEU Tech Solar Profile</a>
+  </footer>
+
+  <script src="calendar.js"></script>
+  <script src="../../assets/js/site-nav.js"></script>
+</body>
+</html>
