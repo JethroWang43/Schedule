@@ -13,26 +13,26 @@ function updateDateTime() {
 }
 
 setInterval(updateDateTime, 1000);
-window.onload = updateDateTime;
+window.onload = () => {
+  updateDateTime();
+  renderNoteTasks();
+};
 
 function showSchedule(day) {
   const scheduleDisplay = document.getElementById("scheduleDisplay");
+  const scheduleModeLabel = document.getElementById("scheduleModeLabel");
   scheduleDisplay.innerHTML = "";
 
   const schedule = getSchedule()[day];
   if (!schedule || schedule.length === 0) {
+    if (scheduleModeLabel) scheduleModeLabel.textContent = `No classes for ${day}`;
     scheduleDisplay.textContent = `No schedule available for ${day}`;
     return;
   }
 
   let isOnline = schedule.every(item => item.room && item.room.toUpperCase() === "ONLINE");
   let description = isOnline ? "All classes are ONLINE" : "All classes are ONSITE";
-
-  const descElem = document.createElement("p");
-  descElem.textContent = description;
-  descElem.style.fontWeight = "bold";
-  descElem.style.marginBottom = "10px";
-  scheduleDisplay.appendChild(descElem);
+  if (scheduleModeLabel) scheduleModeLabel.textContent = description;
 
   const table = document.createElement("table");
   const tableHeader = `<tr><th>Course</th><th>Time</th><th>Subject</th></tr>`;
@@ -116,35 +116,141 @@ function parseTime(timeStr) {
   return totalMinutes;
 }
 
+const NOTE_TASKS_KEY = 'sw_note_tasks_v1';
+const NOTE_TASKS_PER_PAGE = 4;
+let currentNoteTaskPage = 1;
+
+function loadNoteTasks() {
+  try {
+    return JSON.parse(localStorage.getItem(NOTE_TASKS_KEY) || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveNoteTasks(tasks) {
+  localStorage.setItem(NOTE_TASKS_KEY, JSON.stringify(tasks));
+}
+
+function renderNoteTasks(page = currentNoteTaskPage) {
+  currentNoteTaskPage = page;
+  const tasks = loadNoteTasks();
+  const ul = document.getElementById('taskList');
+  const pagination = document.getElementById('taskPagination');
+  
+  if (!ul || !pagination) return;
+  
+  ul.innerHTML = '';
+  const totalPages = Math.ceil(tasks.length / NOTE_TASKS_PER_PAGE) || 1;
+  const startIdx = (page - 1) * NOTE_TASKS_PER_PAGE;
+  const endIdx = startIdx + NOTE_TASKS_PER_PAGE;
+  const pageTasks = tasks.slice(startIdx, endIdx);
+
+  if (pageTasks.length === 0 && tasks.length === 0) {
+    ul.innerHTML = '<div class="note-task-empty">No tasks yet. Add one above!</div>';
+  } else if (pageTasks.length === 0) {
+    renderNoteTasks(1);
+    return;
+  } else {
+    pageTasks.forEach((task, idx) => {
+      const li = document.createElement('li');
+      li.className = 'note-task-item';
+      
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = task.completed || false;
+      checkbox.onchange = () => {
+        task.completed = checkbox.checked;
+        saveNoteTasks(tasks);
+        renderNoteTasks(page);
+      };
+      
+      const span = document.createElement('span');
+      span.className = 'note-task-text';
+      if (task.completed) span.classList.add('completed');
+      span.textContent = task.text;
+      
+      const actions = document.createElement('div');
+      actions.className = 'note-task-actions';
+      
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'note-task-edit-btn';
+      editBtn.textContent = '✏️';
+      editBtn.title = 'Edit';
+      editBtn.onclick = () => {
+        const newText = prompt('Edit task:', task.text);
+        if (newText !== null && newText.trim() !== '') {
+          task.text = newText.trim();
+          saveNoteTasks(tasks);
+          renderNoteTasks(page);
+        }
+      };
+      
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'note-task-delete-btn';
+      deleteBtn.textContent = '🗑️';
+      deleteBtn.title = 'Delete';
+      deleteBtn.onclick = () => {
+        tasks.splice(startIdx + idx, 1);
+        saveNoteTasks(tasks);
+        if (tasks.length > 0 && page > Math.ceil(tasks.length / NOTE_TASKS_PER_PAGE)) {
+          renderNoteTasks(page - 1);
+        } else {
+          renderNoteTasks(page);
+        }
+      };
+      
+      actions.appendChild(editBtn);
+      actions.appendChild(deleteBtn);
+      
+      li.appendChild(checkbox);
+      li.appendChild(span);
+      li.appendChild(actions);
+      ul.appendChild(li);
+    });
+  }
+
+  pagination.innerHTML = `
+    <div class="note-task-pagination">
+      <button type="button" class="note-task-page-btn note-task-page-arrow" id="noteTaskPrevBtn" ${page === 1 ? 'disabled' : ''}>&lt;</button>
+      <span class="note-task-page-info">Page ${page} of ${totalPages}</span>
+      <button type="button" class="note-task-page-btn note-task-page-arrow" id="noteTaskNextBtn" ${page === totalPages ? 'disabled' : ''}>&gt;</button>
+    </div>
+  `;
+
+  document.getElementById('noteTaskPrevBtn')?.addEventListener('click', () => {
+    if (page > 1) renderNoteTasks(page - 1);
+  });
+  document.getElementById('noteTaskNextBtn')?.addEventListener('click', () => {
+    if (page < totalPages) renderNoteTasks(page + 1);
+  });
+}
+
 function addTask() {
   const input = document.getElementById("taskInput");
   const taskText = input.value.trim();
   if (taskText === "") return;
 
-  const li = document.createElement("li");
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  const span = document.createElement("span");
-  span.textContent = taskText;
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "Delete";
-  removeBtn.onclick = () => li.remove();
-
-  li.appendChild(checkbox);
-  li.appendChild(span);
-  li.appendChild(removeBtn);
-
-  document.getElementById("taskList").appendChild(li);
+  const tasks = loadNoteTasks();
+  tasks.push({
+    id: Date.now(),
+    text: taskText,
+    completed: false
+  });
+  saveNoteTasks(tasks);
   input.value = "";
+  
+  const totalPages = Math.ceil(tasks.length / NOTE_TASKS_PER_PAGE);
+  renderNoteTasks(totalPages);
 }
 
 function downloadTasks() {
-  const tasks = [];
-  document.querySelectorAll("#taskList li span").forEach(span => {
-    tasks.push(span.textContent);
-  });
+  const tasks = loadNoteTasks();
+  const taskTexts = tasks.map(t => t.text);
 
-  const blob = new Blob([tasks.join("\n")], { type: "text/plain" });
+  const blob = new Blob([taskTexts.join("\n")], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");

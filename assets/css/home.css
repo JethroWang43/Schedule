@@ -1,0 +1,499 @@
+.join {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2.5rem;
+  padding: 2rem 24px;
+  max-width: 1200px;
+  margin: 1.5rem auto 0 auto;
+  align-items: start;
+}
+
+.left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.schedule {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1.25rem;
+  align-items: stretch;
+}
+
+.schedule-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.schedule-mode-label {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2b2f33;
+}
+
+.schedule .day-dropdown,
+.schedule select {
+  width: 100%;
+}
+
+.day-dropdown {
+  width: auto;
+  min-width: 280px;
+  max-width: 320px;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 2px solid #4caf50;
+  background: #f0f0f0;
+  color: #222;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.07);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  outline: none;
+}
+
+.day-dropdown:focus {
+  border-color: #388e3c;
+  box-shadow: 0 0 0 2px #e0ffe0;
+}
+
+.day-dropdown option {
+  background: #fff;
+  color: #222;
+  font-size: 1.05rem;
+  padding: 8px 0;
+}
+
+#scheduleDisplay {
+  grid-column: 1 / 2;
+  width: 100%;
+}
+
+#scheduleDisplay table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(76, 175, 80, 0.08);
+}
+
+#scheduleDisplay th,
+#scheduleDisplay td {
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e8ecef;
+  vertical-align: top;
+}
+
+#scheduleDisplay tr:last-child td {
+  border-bottom: none;
+}
+
+#scheduleDisplay th {
+  background-color: #4caf50;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+#scheduleDisplay td {
+  font-size: 1.15rem;
+  color: #2f3439;
+}
+
+#scheduleDisplay td a {
+  margin-left: 6px;
+  color: #1565c0;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#scheduleDisplay td a:hover {
+  text-decoration: underline;
+}
+
+.schedule-tab-panel[hidden] {
+  display: none;
+}
+
+.schedule-tab-panel {
+  display: none;
+}
+
+.schedule-tab-panel.active {
+  display: block;
+}
+
+.day-details {
+  background-color: #e0ffe0;
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  border-top: 2px solid #4caf50;
+  box-shadow: 0 2px 12px rgba(76, 175, 80, 0.07);
+  margin-bottom: 1.5rem;
+}
+
+.note-of-day {
+  background-color: #fff;
+  padding: 24px 20px;
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 6px 28px rgba(76, 175, 80, 0.08);
+  width: 100%;
+  grid-column: 2 / 3;
+  align-self: start;
+  position: sticky;
+  top: 88px;
+}
+
+.note-of-day h3 {
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.note-of-day input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.note-of-day input[type="text"]:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+.note-of-day button {
+  padding: 8px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.note-of-day button:hover {
+  background-color: #45a049;
+}
+
+.note-of-day ul {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 24px;
+}
+
+.note-of-day li {
+  background-color: #f6fff6;
+  padding: 16px 12px;
+  margin: 12px 0;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.07);
+  transition: background-color 0.3s ease, box-shadow 0.3s;
+}
+
+.note-task-item {
+  background-color: #f6fff6;
+  padding: 16px 12px;
+  margin: 12px 0;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.07);
+  transition: background-color 0.3s ease, box-shadow 0.3s;
+}
+
+.note-of-day li:hover,
+.note-task-item:hover {
+  background-color: #e0ffe0;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.12);
+}
+
+.note-of-day li span {
+  flex-grow: 1;
+  margin-left: 14px;
+  font-size: 17px;
+}
+
+.note-task-text {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 17px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  margin-left: 0;
+  margin-right: 0;
+  padding-right: 4px;
+}
+
+.note-task-text.completed {
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.note-task-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+}
+
+.note-task-edit-btn,
+.note-task-delete-btn {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.note-task-edit-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.note-task-edit-btn:hover {
+  background-color: #1976d2;
+}
+
+.note-task-delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.note-task-delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.note-of-day li input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.note-task-empty {
+  color: #999;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.95rem;
+}
+
+.note-task-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  margin-bottom: 18px;
+}
+
+.note-task-page-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+.note-task-page-arrow {
+  min-width: 30px;
+  line-height: 1;
+}
+
+.note-task-page-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.note-task-page-info {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.76rem;
+  opacity: 0.85;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.note-of-day .note-task-page-btn {
+  width: 30px !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+
+.mini-dashboard {
+  background: #fff;
+  padding: 12px 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(76, 175, 80, 0.06);
+  max-width: 420px;
+  margin: 0 0 8px 0;
+}
+
+.mini-dashboard h3 {
+  margin-top: 0;
+}
+
+.mini-dashboard ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+}
+
+.mini-dashboard-item {
+  padding: 8px 6px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mini-dashboard .muted {
+  color: #666;
+}
+
+.mini-actions button {
+  margin-left: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.take-control-mini {
+  display: none;
+}
+
+.mini-warning {
+  background: #ffeb3b;
+  color: #222;
+  padding: 4px 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+  font-weight: 600;
+}
+
+.mini-warning.overdue {
+  background: #f44336;
+  color: #fff;
+}
+
+@media screen and (max-width: 992px) {
+  .join {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    padding: 12px;
+    gap: 18px;
+  }
+
+  .day-details {
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+
+  .note-of-day {
+    position: static;
+  }
+
+  .schedule-mode-label {
+    font-size: 1rem;
+  }
+
+  .day-dropdown {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .join {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+
+  .schedule-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .schedule-mode-label {
+    font-size: 1.25rem;
+  }
+
+  .day-dropdown {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .note-of-day {
+    padding: 12px;
+    margin-top: 12px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    max-width: 98vw;
+  }
+
+  #scheduleDisplay th,
+  #scheduleDisplay td {
+    padding: 10px 8px;
+    font-size: 1rem;
+  }
+}

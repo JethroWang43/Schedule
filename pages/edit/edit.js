@@ -379,8 +379,19 @@ function handleScheduleModalSubmit(event) {
 function restoreDefaultSchedule() {
   if (!confirm('Restore the default schedule and remove your saved changes?')) return;
 
+  // Force clear all old data
+  localStorage.removeItem('sw_schedule_v1');
+  localStorage.removeItem('sw_schedule_version');
+  
+  // Save fresh default schedule
   saveSchedule(cloneDefaultSchedule());
-  renderScheduleEditor();
+  
+  // Reload from fresh
+  window.dummyData = getSchedule();
+  currentSavedScheduleDay = 'Monday';
+  renderScheduleEditor('scheduleSavedTab');
+  
+  alert('Schedule restored to default!');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
